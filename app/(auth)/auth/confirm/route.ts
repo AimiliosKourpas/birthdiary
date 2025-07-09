@@ -15,19 +15,19 @@ export async function GET(request: NextRequest) {
   redirectTo.searchParams.delete('type')
 
   if (token_hash && type) {
-    const supabase = createClient()
+    const supabase = await createClient()  // <== await here!
 
     const { error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     })
+
     if (!error) {
       redirectTo.searchParams.delete('next')
       return NextResponse.redirect(redirectTo)
     }
   }
 
-  // return the user to an error page with some instructions
   redirectTo.pathname = '/error'
   return NextResponse.redirect(redirectTo)
 }
