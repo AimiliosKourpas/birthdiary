@@ -30,29 +30,44 @@ export default function DeleteAccountPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-4 border rounded-xl shadow">
-      <h1 className="text-xl font-semibold mb-4">Delete Account</h1>
-      <p className="mb-4 text-sm text-red-600">
-        This will permanently delete your account and all associated data.
-        <br />
-        To confirm, type <strong className="font-mono">DELETE</strong> below.
+    <div className="max-w-md mx-auto mt-24 p-6 bg-pink-50 rounded-xl shadow-lg border border-pink-300">
+      <h1 className="text-3xl font-bold mb-6 text-pink-700 flex items-center gap-2">
+        <span role="img" aria-label="warning">
+          ⚠️
+        </span>
+        Delete Account
+      </h1>
+
+      <p className="mb-6 text-pink-600 leading-relaxed">
+        This action will <strong className="text-red-600">permanently delete</strong> your account and all your memories stored in BirthDiary. 
+        Please be certain before you proceed.
+      </p>
+
+      <p className="mb-4 text-sm text-pink-700">
+        To confirm, please type <strong className="font-mono text-pink-800">DELETE</strong> in the box below:
       </p>
 
       <input
         type="text"
         value={confirmationText}
-        onChange={(e) => setConfirmationText(e.target.value)}
+        onChange={(e) => setConfirmationText(e.target.value.toUpperCase())}
         placeholder="Type DELETE to confirm"
-        className="w-full mb-4 px-3 py-2 border rounded"
+        className="w-full mb-6 px-4 py-3 border border-pink-300 rounded-lg text-lg font-mono placeholder-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-400"
       />
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && (
+        <p className="mb-4 text-center text-red-600 font-semibold">
+          {error}
+        </p>
+      )}
 
       <button
         onClick={handleDelete}
         disabled={loading || confirmationText !== 'DELETE'}
-        className={`w-full px-4 py-2 rounded text-white ${
-          confirmationText === 'DELETE' ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed'
+        className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+          confirmationText === 'DELETE' && !loading
+            ? 'bg-red-600 hover:bg-red-700 cursor-pointer'
+            : 'bg-red-300 cursor-not-allowed'
         }`}
       >
         {loading ? 'Deleting...' : 'Delete My Account'}

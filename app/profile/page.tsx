@@ -1,5 +1,7 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import UpdateProfileForm from '@/components/UpdateProfileForm'
+import FormWrapper from '@/components/ui/FormWrapper'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -9,7 +11,8 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser()
 
   if (userError || !user) {
-    return <p>Please log in to update your profile.</p>
+    // Redirect to login if no user
+    redirect('/login')
   }
 
   const { data: profileData, error: profileError } = await supabase
@@ -24,10 +27,16 @@ export default async function ProfilePage() {
 
   return (
     <main className="p-4">
-      <UpdateProfileForm
-        initialName={profileData?.full_name || ''}
-        initialBirthdate={profileData?.birthdate || ''}
-      />
+      <FormWrapper
+        title="Update Profile"
+        description="Edit your full name and birthdate"
+        showConfetti
+      >
+        <UpdateProfileForm
+          initialName={profileData?.full_name || ''}
+          initialBirthdate={profileData?.birthdate || ''}
+        />
+      </FormWrapper>
     </main>
   )
 }

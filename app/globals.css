@@ -120,3 +120,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* globals.css or a new background.css */
+.birthday-bg {
+  background-image: url('/cake-pattern.svg');
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 150px 150px;
+  opacity: 0.1;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
