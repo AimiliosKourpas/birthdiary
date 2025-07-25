@@ -13,7 +13,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // 1. Delete user data from your tables
+  // Delete user data from your tables
   const { error: profileError } = await supabase
     .from('profiles')
     .delete()
@@ -23,7 +23,7 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: profileError.message }, { status: 500 })
   }
 
-  // 2. Delete user from Supabase auth
+  //  Delete user from Supabase auth
   const { error: deleteUserError } = await supabase.auth.admin.deleteUser(user.id)
 
   if (deleteUserError) {

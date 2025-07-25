@@ -16,10 +16,10 @@ export async function POST(req: Request) {
 
   let friendName = body.name;
   let friendBirthday = body.birthday;
-  let linkedProfileId = body.linkedProfileId || null; // this corresponds to linked_profile_id
+  let linkedProfileId = body.linkedProfileId || null; 
 
   if (linkedProfileId) {
-    // Fetch friend's profile data
+    // Fetch friend
     const { data: friendProfile, error: profileError } = await supabase
       .from('profiles')
       .select('full_name, birthdate')

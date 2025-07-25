@@ -3,14 +3,12 @@
 import { useState } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import FormWrapper from '@/components/ui/FormWrapper';
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import CustomDatePicker from '@/components/ui/DatePicker';
 
 export default function AddFriendForm() {
   const [name, setName] = useState('');
-  const [birthday, setBirthday] = useState('');
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +21,10 @@ export default function AddFriendForm() {
 
     const res = await fetch('/api/friends/add', {
       method: 'POST',
-      body: JSON.stringify({ name, birthday }),
+      body: JSON.stringify({
+        name,
+        birthday: birthday?.toISOString().split('T')[0],
+      }),
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -32,7 +33,7 @@ export default function AddFriendForm() {
     if (res.ok) {
       setSuccess(true);
       setName('');
-      setBirthday('');
+      setBirthday(null);
     } else {
       setError(result.error || 'Something went wrong');
     }
@@ -41,29 +42,36 @@ export default function AddFriendForm() {
   }
 
   return (
-    <FormWrapper title="Add a Birthday" description="Add a friend's birthday" showConfetti>
+    <FormWrapper
+      title="Add a Birthday"
+      description="Add your friend’s name and birthday below"
+      showConfetti
+    >
       <Card className="shadow-none border-none bg-transparent p-0">
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-pink-700 mb-1">
+                Friend’s Name
+              </label>
               <input
                 type="text"
                 placeholder="e.g. Alice Johnson"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-300 bg-white"
                 required
+                className="w-full px-4 py-3 rounded-2xl border border-pink-200 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-300 text-gray-800 placeholder:text-gray-400 transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-              <input
-                type="date"
-                value={birthday}
-                onChange={(e) => setBirthday(e.target.value)}
-                className="w-full border border-gray-300 p-3 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-pink-300 bg-white"
+              <label className="block text-sm font-medium text-pink-700 mb-1">
+                Date of Birth
+              </label>
+              <CustomDatePicker
+                name="birthday"
+                selectedDate={birthday}
+                onChange={setBirthday}
                 required
               />
             </div>
@@ -71,9 +79,9 @@ export default function AddFriendForm() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full py-3 rounded-xl text-white font-semibold text-lg transition-all ${
+              className={`w-full py-3 rounded-2xl font-semibold text-white text-lg transition-all ${
                 loading
-                  ? 'bg-gray-400 cursor-not-allowed'
+                  ? 'bg-gray-300 cursor-not-allowed'
                   : 'bg-pink-500 hover:bg-pink-600 active:scale-[0.98]'
               }`}
             >
@@ -82,13 +90,15 @@ export default function AddFriendForm() {
 
             {success && (
               <p className="flex items-center gap-2 text-green-600 font-medium text-sm mt-2 animate-fade-in">
-                <CheckCircle className="w-4 h-4" /> Friend added successfully.
+                <CheckCircle className="w-4 h-4" />
+                Friend added successfully.
               </p>
             )}
 
             {error && (
               <p className="flex items-center gap-2 text-red-600 font-medium text-sm mt-2 animate-fade-in">
-                <XCircle className="w-4 h-4" /> {error}
+                <XCircle className="w-4 h-4" />
+                {error}
               </p>
             )}
           </form>

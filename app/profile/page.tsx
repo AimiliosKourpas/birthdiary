@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import UpdateProfileForm from '@/components/UpdateProfileForm'
 import FormWrapper from '@/components/ui/FormWrapper'
-
+import NotificationToggle from '@/components/NotificationToggle'
 export default async function ProfilePage() {
   const supabase = await createClient()
   const {
@@ -11,8 +11,7 @@ export default async function ProfilePage() {
   } = await supabase.auth.getUser()
 
   if (userError || !user) {
-    // Redirect to login if no user
-    redirect('/login')
+    redirect('/about')
   }
 
   const { data: profileData, error: profileError } = await supabase
@@ -36,6 +35,7 @@ export default async function ProfilePage() {
           initialName={profileData?.full_name || ''}
           initialBirthdate={profileData?.birthdate || ''}
         />
+        <NotificationToggle />
       </FormWrapper>
     </main>
   )

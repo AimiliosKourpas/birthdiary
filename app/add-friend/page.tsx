@@ -19,9 +19,9 @@ export default function AddFriendPage() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        router.push('/login'); // Redirect if NOT logged in
+        router.push('/about'); 
       } else {
-        setCheckingAuth(false); // User logged in, show form
+        setCheckingAuth(false); 
       }
     }
 

@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     .from('friends')
     .delete()
     .eq('id', friendId)
-    .eq('owner_id', user.id); // extra safety
+    .eq('owner_id', user.id); 
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

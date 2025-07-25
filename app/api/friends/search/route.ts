@@ -16,7 +16,6 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const query = url.searchParams.get('q') || '';
 
-  // Case-insensitive partial match on name
   const { data, error } = await supabase
     .from('friends')
     .select('id, name, birthday')

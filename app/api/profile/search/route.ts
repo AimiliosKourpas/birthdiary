@@ -22,7 +22,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Query profiles matching name or email but exclude yourself (user.id)
   const { data, error } = await supabase
   .from('profiles')
   .select('id, full_name, email, birthdate')

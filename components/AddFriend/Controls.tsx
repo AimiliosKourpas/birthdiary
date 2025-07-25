@@ -66,7 +66,7 @@ export default function Controls({ query, onQueryChange, reload, loading }: Prop
       {searchOpen && (
         <>
           {isMobile ? (
-            // MOBILE: popup below button, no X inside input, closes on outside click or Escape
+            // MOBILE
             <div
               className="absolute top-full mt-2 left-0 bg-white rounded-lg shadow-md px-4 py-2 w-56 ring-1 ring-blue-300 ring-opacity-40 z-50 flex"
               role="dialog"
@@ -87,7 +87,7 @@ export default function Controls({ query, onQueryChange, reload, loading }: Prop
               />
             </div>
           ) : (
-            // DESKTOP: inline input + X button to close search
+            // DESKTOP
             <>
               <input
                 ref={inputRef}

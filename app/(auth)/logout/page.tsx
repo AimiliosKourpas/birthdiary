@@ -9,7 +9,7 @@ const LogoutPage = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => router.push("/"), 2000);
-    return () => clearTimeout(timer); // clean up timer on unmount
+    return () => clearTimeout(timer); 
   }, [router]);
 
   return (

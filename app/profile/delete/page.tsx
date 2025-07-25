@@ -25,7 +25,6 @@ export default function DeleteAccountPage() {
       return
     }
 
-    // Redirect after deletion
     router.push('/')
   }
 
