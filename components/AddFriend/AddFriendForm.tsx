@@ -23,7 +23,9 @@ export default function AddFriendForm() {
       method: 'POST',
       body: JSON.stringify({
         name,
-        birthday: birthday?.toISOString().split('T')[0],
+        birthday: birthday
+          ? `${birthday.getFullYear()}-${String(birthday.getMonth() + 1).padStart(2, '0')}-${String(birthday.getDate()).padStart(2, '0')}`
+          : null,
       }),
       headers: { 'Content-Type': 'application/json' },
     });

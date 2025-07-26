@@ -21,7 +21,7 @@ export function SignUpForm() {
     >
       <Card className="shadow-none border-none bg-transparent p-0">
         <CardContent>
-          <form action="">
+          <form action={signup}>
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="full_name">Full name</Label>
@@ -52,6 +52,16 @@ export function SignUpForm() {
                   onChange={setBirthdate}
                   required
                 />
+                {/* Hidden input to actually submit the date */}
+                <input
+                  type="hidden"
+                  name="birthdate"
+                  value={
+                    birthdate
+                      ? `${birthdate.getFullYear()}-${String(birthdate.getMonth() + 1).padStart(2, "0")}-${String(birthdate.getDate()).padStart(2, "0")}`
+                      : ""
+                  }
+                />
               </div>
 
               <div className="grid gap-2">
@@ -64,7 +74,7 @@ export function SignUpForm() {
                 />
               </div>
 
-              <Button formAction={signup} type="submit" className="w-full">
+              <Button type="submit" className="w-full">
                 Create an account
               </Button>
             </div>
