@@ -26,8 +26,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
   }
 
-  console.log('Users with notifications enabled:', users);
-
   for (const { user_id } of users) {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
