@@ -19,7 +19,7 @@ export default async function AboutPage() {
       <CookieConsentBanner />
 
       <FormWrapper
-        title="Welcome to Birthday Buddy 🎉"
+        title="Welcome to BirthDiary Buddy 🎉"
         description="Because friends' birthdays are more important than ours — let's celebrate them in style!"
         showConfetti
       >

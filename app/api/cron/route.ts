@@ -6,8 +6,15 @@ import Welcome from '@/emails/WelcomeEmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
-export async function POST() {
-  const supabase = adminSupabase; // admin here. 
+export async function GET(req: Request) {
+  // ✅ Security check
+  const authHeader = req.headers.get('Authorization');
+  const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+  if (authHeader !== expectedSecret) {
+    return new NextResponse('Unauthorized', { status: 401 });
+  }
+
+  const supabase = adminSupabase;
 
   const { data: users, error: usersError } = await supabase
     .from('profile_settings')
@@ -47,22 +54,19 @@ export async function POST() {
     const friends = (allFriends || []).filter((friend) => {
       if (!friend.birthday) return false;
       const bday = new Date(friend.birthday);
-      console.log('Friend birthday raw:', friend.birthday, 'Parsed:', bday.toISOString());
       return bday.toISOString().slice(5, 10) === today;
     });
-
-    console.log(`User ${user_id} friends with birthday today:`, friends);
 
     if (friends.length === 0) continue;
 
     try {
-      console.log(`Sending email to: ${profile.email}`);
       await resend.emails.send({
         from: 'no-reply@resend.dev',
         to: profile.email,
         subject: '🎉 Birthday Reminder',
         react: React.createElement(Welcome, { friends }),
       });
+      console.log(`Email sent to ${profile.email}`);
     } catch (e) {
       console.error(`Email error for user ${user_id}:`, e);
     }
