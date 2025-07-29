@@ -32,12 +32,14 @@ export default function CustomDatePicker({
       required={required}
       customInput={
         <input
-          readOnly // disables keyboard popup on mobile
-          inputMode="none" // hint for mobile to skip keyboard
+          readOnly
+          inputMode="none"
           className={cn(
-            "w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            "w-full h-10 box-border rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400",
+            "focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:ring-offset-2"
           )}
         />
+
       }
     />
   );

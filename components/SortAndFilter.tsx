@@ -125,9 +125,12 @@ function IconDropdown<T extends string>({
                 }}
                 tabIndex={0}
                 role="option"
-                className={`cursor-pointer px-4 py-2 text-sm flex items-center gap-2 hover:bg-blue-100 ${
-                  value === dd.value ? 'bg-blue-500 text-white font-semibold' : ''
-                }`}
+                className={`cursor-pointer px-4 py-2 text-sm flex items-center gap-2 transition-colors
+                ${value === dd.value 
+                  ? 'bg-blue-500 text-white font-semibold hover:bg-blue-600' 
+                  : 'hover:bg-blue-100 text-gray-800'}
+              `}
+              
               >
                 <IconComp className="w-4 h-4" />
                 {label}

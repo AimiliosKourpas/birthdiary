@@ -80,7 +80,7 @@ export default function FriendItem({
 
   if (isEditing) {
     return (
-      <li className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow space-y-3 transition-all">
+      <li className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow space-y-3 transition-all min-h-[170px]">
         <input
           type="text"
           value={editName}

@@ -89,14 +89,15 @@ export default function AddFriendForm() {
             >
               {loading ? 'Adding...' : 'Add Friend'}
             </button>
-
             {success && (
-              <p className="flex items-center gap-2 text-green-600 font-medium text-sm mt-2 animate-fade-in">
-                <CheckCircle className="w-4 h-4" />
-                Friend added successfully.
-              </p>
-            )}
-
+                <p className="flex items-center gap-2 text-green-600 font-medium text-sm mt-2 animate-fade-in">
+                  <CheckCircle className="w-4 h-4" />
+                  Friend added successfully.&nbsp;
+                  <a href="/" className="underline hover:text-pink-700">
+                    See him
+                  </a>
+                </p>
+              )}
             {error && (
               <p className="flex items-center gap-2 text-red-600 font-medium text-sm mt-2 animate-fade-in">
                 <XCircle className="w-4 h-4" />

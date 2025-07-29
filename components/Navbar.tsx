@@ -23,6 +23,11 @@ export default function Navbar() {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
   }, []);
 
+  // Scroll to top on navigation change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/profile', label: 'Profile' },
@@ -33,33 +38,27 @@ export default function Navbar() {
   return (
     <>
       <nav className="bg-pink-100 text-pink-900 shadow-md sticky top-0 z-50">
-        <div className="max-w-screen-xl mx-auto px-4 py-3 flex items-center justify-between relative">
-          <div className="md:hidden flex-1">
-            {!isHome ? (
-              <Link
-                href="/"
-                className="text-pink-700 font-semibold text-lg select-none"
-                onClick={() => setIsOpen(false)}
-              >
-                Birthdiary
-              </Link>
-            ) : (
-              <div className="text-pink-700 font-semibold text-lg select-none">Home</div>
-            )}
-          </div>
-
-          {!isHome && (
+        {/* Desktop navbar */}
+        <div className="hidden md:flex items-center justify-between max-w-screen-xl mx-auto px-4 py-3">
+          {/* Left: Birthday emoji + brand */}
+          {!isHome ? (
             <Link
               href="/"
-              className="hidden md:flex items-center gap-2 text-xl font-bold"
+              className="flex items-center gap-2 text-xl font-bold text-pink-700"
               onClick={() => setIsOpen(false)}
             >
               <span className="animate-spin-slow">🎉</span>
               <span className="font-semibold">Birthdiary</span>
             </Link>
+          ) : (
+            <div className="flex items-center gap-2 text-xl font-bold text-pink-700 select-none">
+              <span className="animate-spin-slow">🎉</span>
+              <span className="font-semibold">Birthdiary</span>
+            </div>
           )}
 
-          <div className="hidden md:flex gap-4 items-center justify-center flex-1">
+          {/* Center: nav links + search button */}
+          <div className="flex items-center gap-6">
             {navLinks.map(({ href, label }) => (
               <Link key={href} href={href} className="hover:underline font-medium">
                 {label}
@@ -80,13 +79,31 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-
-            <div onClick={() => setIsOpen(false)}>
-              <LoginLogoutButton />
-            </div>
           </div>
 
-          <div className="flex gap-4 md:hidden items-center justify-end flex-1">
+          {/* Right: LoginLogoutButton */}
+          <div onClick={() => setIsOpen(false)}>
+            <LoginLogoutButton />
+          </div>
+        </div>
+
+        {/* Mobile Navbar */}
+        <div className="md:hidden flex items-center justify-between max-w-screen-xl mx-auto px-4 py-3">
+          <div className="flex-1">
+            {!isHome ? (
+              <Link
+                href="/"
+                className="text-pink-700 font-semibold text-lg select-none"
+                onClick={() => setIsOpen(false)}
+              >
+                Birthdiary
+              </Link>
+            ) : (
+              <div className="text-pink-700 font-semibold text-lg select-none">Home</div>
+            )}
+          </div>
+
+          <div className="flex gap-4 items-center justify-end flex-1">
             <button
               onClick={() => setShowSearch((prev) => !prev)}
               className="text-pink-700 hover:text-pink-900"
@@ -101,6 +118,7 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Mobile Menu Dropdown */}
         {isOpen && (
           <div className="md:hidden bg-pink-50 px-4 pb-4">
             <div className="flex flex-col gap-4">
@@ -136,12 +154,14 @@ export default function Navbar() {
         )}
       </nav>
 
+      {/* Mobile Search */}
       {showSearch && (
         <div className="md:hidden px-4 py-2 bg-white border-t border-pink-200 shadow-sm">
           <ProfileSearch />
         </div>
       )}
 
+      {/* Install Popup */}
       {showInstallPopup && (
         <InstallInstructions onClose={() => setShowInstallPopup(false)} />
       )}

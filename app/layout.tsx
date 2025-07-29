@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import InstallButton from "@/components/InstallButton";
-import { AuthProvider } from "@/components/AuthContext"; // ✅ import it
+import { AuthProvider } from "@/components/AuthContext";
+import { Toaster } from "sonner"; // ✅ Import this
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,7 +35,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.jpg" />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        <AuthProvider> {/* ✅ Wrap entire app */}
+        <AuthProvider>
+          <Toaster richColors position="top-center" /> {/* ✅ Add this */}
           <Navbar />
           {children}
         </AuthProvider>
