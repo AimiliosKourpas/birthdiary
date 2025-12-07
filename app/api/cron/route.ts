@@ -59,7 +59,7 @@ export async function GET(req: Request) {
 
     try {
       await resend.emails.send({
-        from: 'no-reply@resend.dev',
+        from: 'BirthDiary <no-reply@birthdiary.org>',
         to: profile.email,
         subject: '🎉 Birthday Reminder',
         react: React.createElement(Welcome, { friends }),

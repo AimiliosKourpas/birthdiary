@@ -59,7 +59,7 @@ const WelcomeEmail = ({
 
           {friends.length > 0 ? (
             friends.map((friend, idx) => {
-              const age = getAge(friend.birthday) + 1; // turning age this year
+              const age = getAge(friend.birthday);
               return (
                 <Text key={idx} style={friendText}>
                   🎂 <strong>{friend.name}</strong> — is turning <strong>{age}</strong> today! 🥳
