@@ -1,6 +1,5 @@
 // app/api/admin/send-update-email/route.ts
 
-import { adminSupabase } from '@/utils/supabase/adminClient';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import React from 'react';
@@ -8,6 +7,26 @@ import React from 'react';
 import RebrandAnnouncementEmail from '@/emails/RebrandAnnouncementEmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+const failedEmails = [
+  'mmarnikolaki@gmail.com',
+  'stkostas10@gmail.com',
+  'sotiris.mam@hotmail.com',
+  'mitsoupitsou@mailinator.com',
+  'deniw92854@0tires.com',
+  'kitaki.mala@yahoo.com',
+  'oliachouliara@gmail.com',
+  'malamatenia.karagianni@gmail.com',
+  'nikikts012@gmail.com',
+  'spkoutsos@gmail.com',
+  'georgedimitriadis21@gmail.com',
+  'gpapagian26@gmail.com',
+  'aimiliosk2002@gmail.com',
+];
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('Authorization');
@@ -17,79 +36,45 @@ export async function GET(req: Request) {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  const { data: profiles, error } = await adminSupabase
-    .from('profiles')
-    .select('id, full_name, email')
-    .not('email', 'is', null);
-
-  if (error) {
-    console.error('Failed to fetch profiles:', error);
-
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch profiles' },
-      { status: 500 }
-    );
-  }
-
-  const users = profiles ?? [];
-
   let sent = 0;
   let failed = 0;
-
   const results = [];
 
-  for (const user of users) {
+  for (const email of failedEmails) {
     try {
       const result = await resend.emails.send({
         from: 'BirthDiary <no-reply@birthdiary.org>',
-        to: user.email,
+        to: email,
         subject: '🎉 Birthdiary got a fresh new look!',
         react: React.createElement(RebrandAnnouncementEmail, {
-          name: user.full_name || 'Friend',
+          name: 'Friend',
         }),
       });
 
       if (result.error) {
         failed++;
-
-        results.push({
-          id: user.id,
-          email: user.email,
-          ok: false,
-          error: result.error,
-        });
-
-        console.error(`Resend error for ${user.email}:`, result.error);
-        continue;
+        results.push({ email, ok: false, error: result.error });
+      } else {
+        sent++;
+        results.push({ email, ok: true, resendId: result.data?.id });
       }
 
-      sent++;
-
-      results.push({
-        id: user.id,
-        email: user.email,
-        ok: true,
-        resendId: result.data?.id,
-      });
-
-      console.log(`Email sent to ${user.email}`, result.data?.id);
-    } catch (err) {
+      await sleep(350);
+    } catch (error) {
       failed++;
-
       results.push({
-        id: user.id,
-        email: user.email,
+        email,
         ok: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
 
-      console.error(`Failed for ${user.email}:`, err);
+      await sleep(350);
     }
   }
 
   return NextResponse.json({
     success: true,
-    usersFound: users.length,
+    usersFound: failedEmails.length,
     sent,
     failed,
     results,
