@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { Search, X, UserPlus, Cake } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -27,8 +27,10 @@ export default function ProfileSearch() {
 
     const timeout = setTimeout(async () => {
       setLoading(true);
+
       const res = await fetch(`/api/profile/search?q=${encodeURIComponent(query)}`);
       const json = await res.json();
+
       if (res.ok) {
         setResults(json.profiles);
         setVisible(true);
@@ -36,6 +38,7 @@ export default function ProfileSearch() {
         setResults([]);
         setVisible(false);
       }
+
       setLoading(false);
     }, 300);
 
@@ -44,14 +47,13 @@ export default function ProfileSearch() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setVisible(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
@@ -67,7 +69,9 @@ export default function ProfileSearch() {
       body: JSON.stringify({ linkedProfileId: profileId }),
       headers: { 'Content-Type': 'application/json' },
     });
+
     const json = await res.json();
+
     if (res.ok) {
       alert('🎉 Friend added!');
       clearSearch();
@@ -77,49 +81,68 @@ export default function ProfileSearch() {
   }
 
   return (
-    <div ref={containerRef} className="relative w-64">
+    <div ref={containerRef} className="relative w-full sm:w-72">
       <div className="relative">
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-pink-400" />
+
         <input
           ref={inputRef}
           type="text"
-          placeholder="Search users..."
+          placeholder="Search friends..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => query && setVisible(true)}
-          className="w-full p-2 pr-8 rounded-md border border-pink-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-400 text-sm"
+          className="h-12 w-full rounded-full border-2 border-pink-100 bg-white px-11 pr-10 text-sm font-bold text-slate-700 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-pink-300 focus:ring-4 focus:ring-pink-100"
         />
+
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-pink-500 hover:text-pink-700"
+            type="button"
+            aria-label="Clear search"
+            className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-pink-50 text-pink-500 transition hover:bg-pink-100 hover:text-pink-700"
           >
-            <X size={16} />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
 
       {visible && (
-        <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto animate-fade-in">
+        <div className="absolute left-0 right-0 z-50 mt-3 max-h-72 overflow-y-auto rounded-3xl border-2 border-pink-100 bg-white p-2 shadow-xl">
           {loading ? (
-            <div className="p-3 text-sm text-pink-500">Loading...</div>
+            <div className="flex items-center gap-2 rounded-2xl bg-pink-50 p-4 text-sm font-black text-pink-500">
+              <Cake className="h-4 w-4" />
+              Searching...
+            </div>
           ) : results.length === 0 ? (
-            <div className="p-3 text-sm text-gray-500">No users found.</div>
+            <div className="rounded-2xl bg-yellow-50 p-4 text-sm font-black text-orange-500">
+              No users found 🎈
+            </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="space-y-2">
               {results.map((profile) => (
                 <li
                   key={profile.id}
-                  className="p-3 flex justify-between items-center hover:bg-pink-50"
+                  className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-pink-50 to-yellow-50 p-3 transition hover:from-pink-100 hover:to-yellow-100"
                 >
-                  <div>
-                    <div className="font-semibold text-pink-700">{profile.full_name}</div>
-                    <div className="text-sm text-gray-500">{profile.email}</div>
+                  <div className="min-w-0">
+                    <div className="truncate font-black text-slate-900">
+                      {profile.full_name || 'Birthday friend'}
+                    </div>
+                    <div className="truncate text-xs font-semibold text-slate-500">
+                      {profile.email}
+                    </div>
                   </div>
+
                   <button
                     onClick={() => addFriend(profile.id)}
-                    className="px-2 py-1 bg-pink-200 text-sm text-pink-800 rounded hover:bg-pink-300"
+                    type="button"
+                    className="shrink-0 rounded-full bg-pink-500 px-3 py-2 text-xs font-black text-white shadow-sm transition hover:bg-pink-600"
                   >
-                    Add
+                    <span className="inline-flex items-center gap-1">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Add
+                    </span>
                   </button>
                 </li>
               ))}
@@ -127,22 +150,6 @@ export default function ProfileSearch() {
           )}
         </div>
       )}
-
-      <style jsx>{`
-        .animate-fade-in {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(4px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

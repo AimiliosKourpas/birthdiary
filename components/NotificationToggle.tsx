@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Bell, BellOff } from 'lucide-react';
 
 export default function NotificationToggle() {
   const [enabled, setEnabled] = useState(false);
@@ -10,16 +11,19 @@ export default function NotificationToggle() {
   useEffect(() => {
     const fetchSetting = async () => {
       const res = await fetch('/api/profile/notifications');
+
       if (!res.ok) {
         setError('Failed to fetch settings');
         setLoading(false);
         return;
       }
+
       const settingsData = await res.json();
 
       if (settingsData?.notifications_enabled !== undefined) {
         setEnabled(settingsData.notifications_enabled);
       }
+
       setLoading(false);
     };
 
@@ -32,9 +36,7 @@ export default function NotificationToggle() {
 
     const res = await fetch('/api/profile/notifications', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ enabled: !enabled }),
     });
 
@@ -50,34 +52,52 @@ export default function NotificationToggle() {
   };
 
   return (
-    <div className="mt-6 bg-gradient-to-br from-white via-rose-50 to-pink-50 border border-pink-100 rounded-2xl p-5 shadow-lg transition-all duration-300 ease-in-out">
-      <h2 className="text-xl font-semibold text-pink-600 mb-3">
-        🎂 Birthday Notifications
-      </h2>
+    <div className="rounded-[2rem] border-2 border-yellow-100 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 p-5 shadow-md">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-orange-500 shadow-sm">
+          {enabled ? <Bell className="h-6 w-6" /> : <BellOff className="h-6 w-6" />}
+        </div>
+
+        <div>
+          <h2 className="text-xl font-black text-slate-900">
+            Birthday notifications
+          </h2>
+          <p className="text-sm font-semibold text-slate-500">
+            Let Birthdiary help you remember.
+          </p>
+        </div>
+      </div>
 
       {loading ? (
-        <p className="text-gray-600">Loading settings...</p>
+        <p className="text-sm font-bold text-slate-500">Loading settings...</p>
       ) : (
         <>
-          <p className="mb-4 text-gray-700">
-            Notifications are currently{' '}
-            <span className={`font-bold ${enabled ? 'text-green-600' : 'text-red-500'}`}>
-              {enabled ? 'enabled ✅' : 'disabled ❌'}
-            </span>
-          </p>
+          <div className="mb-4 rounded-3xl bg-white/80 p-4 shadow-sm">
+            <p className="text-sm font-bold text-slate-600">
+              Notifications are currently{' '}
+              <span className={enabled ? 'text-green-600' : 'text-red-500'}>
+                {enabled ? 'enabled ✅' : 'disabled ❌'}
+              </span>
+            </p>
+          </div>
 
           <button
             onClick={toggle}
-            className={`px-5 py-2.5 rounded-xl font-medium transition-all shadow-sm text-white ${
+            disabled={loading}
+            className={`min-h-12 rounded-full px-6 py-3 text-sm font-black text-white shadow-md transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60 ${
               enabled
-                ? 'bg-red-500 hover:bg-red-600 active:scale-95'
-                : 'bg-green-500 hover:bg-green-600 active:scale-95'
+                ? 'bg-gradient-to-r from-red-400 to-rose-500'
+                : 'bg-gradient-to-r from-green-400 to-emerald-500'
             }`}
           >
-            {enabled ? 'Disable' : 'Enable'} Notifications
+            {enabled ? 'Disable notifications' : 'Enable notifications'}
           </button>
 
-          {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+          {error && (
+            <p className="mt-3 text-sm font-black text-red-500">
+              {error}
+            </p>
+          )}
         </>
       )}
     </div>

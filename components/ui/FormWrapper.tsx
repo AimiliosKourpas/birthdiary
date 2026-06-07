@@ -12,8 +12,7 @@ export default function FormWrapper({
   showConfetti?: boolean;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      {showConfetti && <ConfettiBackground />}
+<div className="min-h-screen flex justify-center p-4 pt-6">      {showConfetti && <ConfettiBackground />}
 
       <div className="relative z-10 max-w-md w-full rounded-2xl p-6 shadow-xl border border-pink-100 bg-gradient-to-br from-white via-rose-50 to-blue-50">
         {title && (

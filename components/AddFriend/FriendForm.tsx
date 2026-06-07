@@ -26,41 +26,50 @@ export default function FriendForm({ onSubmit, onCancel, friend }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 p-4 rounded-xl border border-gray-200 bg-white shadow-sm"
+      className="space-y-5 rounded-[1.75rem] border border-white/70 bg-white/75 p-5 shadow-lg backdrop-blur-xl"
     >
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="👤 Friend's name"
-        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm"
-        required
-      />
-      <input
-        value={birthday}
-        onChange={(e) => setBirthday(e.target.value)}
-        type="date"
-        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 shadow-sm"
-        required
-      />
+      <div>
+        <label className="mb-1.5 block text-sm font-bold text-slate-700">
+          Friend name
+        </label>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Alice Johnson"
+          className="h-12 w-full rounded-2xl border border-pink-100 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-pink-300"
+          required
+        />
+      </div>
 
-      <div className="flex gap-3 justify-end">
+      <div>
+        <label className="mb-1.5 block text-sm font-bold text-slate-700">
+          Birthday
+        </label>
+        <input
+          value={birthday}
+          onChange={(e) => setBirthday(e.target.value)}
+          type="date"
+          className="h-12 w-full rounded-2xl border border-pink-100 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm outline-none transition focus:ring-2 focus:ring-pink-300"
+          required
+        />
+      </div>
+
+      <div className="flex justify-end gap-3">
         <button
           type="submit"
-          className={`flex items-center gap-2 px-4 py-2 text-white font-semibold rounded-lg transition ${
-            isEdit ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'
-          }`}
+          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
         >
-          {isEdit ? <Pencil className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-          {isEdit ? 'Update Friend' : 'Add Friend'}
+          {isEdit ? <Pencil className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+          {isEdit ? 'Update friend' : 'Add friend'}
         </button>
 
         {isEdit && (
           <button
             type="button"
             onClick={onCancel}
-            className="flex items-center gap-1 text-gray-500 hover:text-red-500 transition"
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-100 px-5 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-200"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
             Cancel
           </button>
         )}

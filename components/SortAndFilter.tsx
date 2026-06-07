@@ -1,13 +1,15 @@
+'use client';
+
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ArrowUpAZ,
   ArrowDownZA,
-  CalendarDays,
+  ArrowUpAZ,
   CalendarCheck,
-  UserMinus,
-  UserPlus,
+  CalendarDays,
   Filter,
   SortAsc,
+  UserMinus,
+  UserPlus,
 } from 'lucide-react';
 
 interface Friend {
@@ -16,18 +18,8 @@ interface Friend {
   birthday: string;
 }
 
-interface SortAndFilterProps {
-    friends: Friend[];
-    filter: FilterType;
-    setFilter: (value: FilterType) => void;
-    sort: SortType;
-    setSort: (value: SortType) => void;
-    onFilteredFriends: (filtered: Friend[]) => void;
-    searchQuery: string; // 👈 add this
-  }
-  
-
 type FilterType = 'all' | 'thisMonth' | 'today';
+
 type SortType =
   | 'nameAsc'
   | 'nameDesc'
@@ -36,7 +28,16 @@ type SortType =
   | 'ageAsc'
   | 'ageDesc';
 
-// Map string keys to icon components
+interface SortAndFilterProps {
+  friends: Friend[];
+  filter: FilterType;
+  setFilter: (value: FilterType) => void;
+  sort: SortType;
+  setSort: (value: SortType) => void;
+  onFilteredFriends: (filtered: Friend[]) => void;
+  searchQuery: string;
+}
+
 const ICONS = {
   filter: Filter,
   calendarDays: CalendarDays,
@@ -51,14 +52,14 @@ const ICONS = {
 const OPTIONS = {
   filter: [
     { label: 'All Friends', value: 'all', iconKey: 'filter' as keyof typeof ICONS },
-    { label: 'Birthdays This Month', value: 'thisMonth', iconKey: 'calendarDays' },
-    { label: 'Birthdays Today', value: 'today', iconKey: 'calendarCheck' },
+    { label: 'This Month', value: 'thisMonth', iconKey: 'calendarDays' },
+    { label: 'Today', value: 'today', iconKey: 'calendarCheck' },
   ] as { label: string; value: FilterType; iconKey: keyof typeof ICONS }[],
   sort: [
     { label: 'Name A-Z', value: 'nameAsc', iconKey: 'arrowUpAZ' },
     { label: 'Name Z-A', value: 'nameDesc', iconKey: 'arrowDownZA' },
-    { label: 'Birthday ↑', value: 'birthdayMdAsc', iconKey: 'calendarDays' },
-    { label: 'Birthday ↓', value: 'birthdayMdDesc', iconKey: 'calendarCheck' },
+    { label: 'Birthday Soon', value: 'birthdayMdAsc', iconKey: 'calendarDays' },
+    { label: 'Birthday Later', value: 'birthdayMdDesc', iconKey: 'calendarCheck' },
     { label: 'Oldest', value: 'ageAsc', iconKey: 'userPlus' },
     { label: 'Youngest', value: 'ageDesc', iconKey: 'userMinus' },
   ] as { label: string; value: SortType; iconKey: keyof typeof ICONS }[],
@@ -70,10 +71,9 @@ function useDropdown<T extends string>(value: T, onChange: (v: T) => void) {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -94,25 +94,30 @@ function IconDropdown<T extends string>({
   dd,
   options,
   icon,
+  label,
 }: {
   dd: ReturnType<typeof useDropdown<T>>;
   options: { label: string; value: T; iconKey: keyof typeof ICONS }[];
   icon: React.ReactElement;
+  label: string;
 }) {
   return (
     <div className="relative" ref={dd.ref}>
       <button
         onClick={dd.toggle}
-        className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition shadow-sm"
-        title="Filter / Sort"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-purple-600 shadow-md ring-2 ring-purple-100 transition hover:-translate-y-0.5 hover:bg-purple-50 hover:shadow-lg"
+        title={label}
+        type="button"
+        aria-label={label}
       >
         {icon}
       </button>
 
       {dd.open && (
-        <ul className="absolute z-50 mt-2 right-0 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto min-w-[180px]">
+        <ul className="absolute right-0 z-50 mt-3 min-w-[210px] overflow-hidden rounded-3xl bg-white p-2 shadow-xl ring-2 ring-pink-100">
           {options.map(({ label, value, iconKey }) => {
             const IconComp = ICONS[iconKey];
+
             return (
               <li
                 key={value}
@@ -125,14 +130,14 @@ function IconDropdown<T extends string>({
                 }}
                 tabIndex={0}
                 role="option"
-                className={`cursor-pointer px-4 py-2 text-sm flex items-center gap-2 transition-colors
-                ${value === dd.value 
-                  ? 'bg-blue-500 text-white font-semibold hover:bg-blue-600' 
-                  : 'hover:bg-blue-100 text-gray-800'}
-              `}
-              
+                aria-selected={value === dd.value}
+                className={`flex cursor-pointer items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-bold transition ${
+                  value === dd.value
+                    ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-pink-50'
+                }`}
               >
-                <IconComp className="w-4 h-4" />
+                <IconComp className="h-4 w-4" />
                 {label}
               </li>
             );
@@ -157,20 +162,26 @@ export default function SortAndFilter({
 
   useEffect(() => {
     const today = new Date();
+
     const filtered = friends
       .filter((f) => {
         const bd = new Date(f.birthday);
-        if (filter === 'today')
+
+        if (filter === 'today') {
           return bd.getDate() === today.getDate() && bd.getMonth() === today.getMonth();
-        if (filter === 'thisMonth') return bd.getMonth() === today.getMonth();
+        }
+
+        if (filter === 'thisMonth') {
+          return bd.getMonth() === today.getMonth();
+        }
+
         return true;
       })
-      .filter((f) =>
-        f.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+      .filter((f) => f.name.toLowerCase().includes(searchQuery.toLowerCase()))
       .sort((a, b) => {
         const aD = new Date(a.birthday);
         const bD = new Date(b.birthday);
+
         switch (sort) {
           case 'nameAsc':
             return a.name.localeCompare(b.name);
@@ -192,15 +203,25 @@ export default function SortAndFilter({
             return 0;
         }
       });
-  
+
     onFilteredFriends(filtered);
   }, [friends, filter, sort, searchQuery, onFilteredFriends]);
-  
 
   return (
-<div className="flex items-center gap-3 w-full sm:w-auto">
-      <IconDropdown dd={filterDD} options={OPTIONS.filter} icon={<Filter className="w-5 h-5" />} />
-      <IconDropdown dd={sortDD} options={OPTIONS.sort} icon={<SortAsc className="w-5 h-5" />} />
+    <div className="flex w-full items-center gap-2 sm:w-auto">
+      <IconDropdown
+        dd={filterDD}
+        options={OPTIONS.filter}
+        icon={<Filter className="h-5 w-5" />}
+        label="Filter friends"
+      />
+
+      <IconDropdown
+        dd={sortDD}
+        options={OPTIONS.sort}
+        icon={<SortAsc className="h-5 w-5" />}
+        label="Sort friends"
+      />
     </div>
   );
 }

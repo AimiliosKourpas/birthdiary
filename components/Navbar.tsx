@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Search } from 'lucide-react';
+import { Menu, X, Search, Download } from 'lucide-react';
 import LoginLogoutButton from './LoginLogoutButton';
 import ProfileSearch from './ProfileSearch';
 import { usePathname } from 'next/navigation';
@@ -23,9 +23,10 @@ export default function Navbar() {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
   }, []);
 
-  // Scroll to top on navigation change
   useEffect(() => {
     window.scrollTo(0, 0);
+    setIsOpen(false);
+    setShowSearch(false);
   }, [pathname]);
 
   const navLinks = [
@@ -37,116 +38,143 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="bg-pink-100 text-pink-900 shadow-md sticky top-0 z-50">
-        {/* Desktop navbar */}
-        <div className="hidden md:flex items-center justify-between max-w-screen-xl mx-auto px-4 py-3">
-          {/* Left: Birthday emoji + brand */}
+      <nav className="sticky top-0 z-50 border-b border-pink-100 bg-pink-50/90 text-pink-900 shadow-sm backdrop-blur-xl">
+        <div className="mx-auto hidden max-w-screen-xl items-center justify-between px-5 py-3 md:flex">
           {!isHome ? (
             <Link
               href="/"
-              className="flex items-center gap-2 text-xl font-bold text-pink-700"
-              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 text-xl font-black text-pink-600 transition hover:text-pink-700"
             >
-              <span className="animate-spin-slow">🎉</span>
-              <span className="font-semibold">Birthdiary</span>
+              <span className="inline-block text-2xl">🎉</span>
+              <span>Birthdiary</span>
             </Link>
           ) : (
-            <div className="flex items-center gap-2 text-xl font-bold text-pink-700 select-none">
-              <span className="animate-spin-slow">🎉</span>
-              <span className="font-semibold">Birthdiary</span>
+            <div className="flex items-center gap-2 text-xl font-black text-pink-600 select-none">
+              <span className="inline-block text-2xl">🎉</span>
+              <span>Birthdiary</span>
             </div>
           )}
 
-          {/* Center: nav links + search button */}
-          <div className="flex items-center gap-6">
-            {navLinks.map(({ href, label }) => (
-              <Link key={href} href={href} className="hover:underline font-medium">
-                {label}
-              </Link>
-            ))}
+          <div className="flex items-center gap-2 rounded-full bg-white/70 px-2 py-1 shadow-sm">
+            {navLinks.map(({ href, label }) => {
+              const active = pathname === href;
 
-            <div className="relative flex items-center">
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`rounded-full px-4 py-2 text-sm font-black transition ${
+                    active
+                      ? 'bg-pink-500 text-white shadow-sm'
+                      : 'text-pink-800 hover:bg-pink-100'
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+
+            <div className="relative">
               <button
                 onClick={() => setShowSearch((prev) => !prev)}
-                className="hover:text-pink-700 transition"
+                className={`flex h-9 w-9 items-center justify-center rounded-full transition ${
+                  showSearch
+                    ? 'bg-purple-100 text-purple-600'
+                    : 'text-pink-700 hover:bg-pink-100'
+                }`}
                 aria-label="Toggle search"
+                type="button"
               >
-                <Search />
+                <Search className="h-5 w-5" />
               </button>
+
               {showSearch && (
-                <div className="ml-2">
+                <div className="absolute right-0 top-12 z-50 w-72">
                   <ProfileSearch />
                 </div>
               )}
             </div>
           </div>
 
-          {/* Right: LoginLogoutButton */}
-          <div onClick={() => setIsOpen(false)}>
+          <div>
             <LoginLogoutButton />
           </div>
         </div>
 
-        {/* Mobile Navbar */}
-        <div className="md:hidden flex items-center justify-between max-w-screen-xl mx-auto px-4 py-3">
-          <div className="flex-1">
-            {!isHome ? (
-              <Link
-                href="/"
-                className="text-pink-700 font-semibold text-lg select-none"
-                onClick={() => setIsOpen(false)}
-              >
-                Birthdiary
-              </Link>
-            ) : (
-              <div className="text-pink-700 font-semibold text-lg select-none">Home</div>
-            )}
-          </div>
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 md:hidden">
+          {!isHome ? (
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-lg font-black text-pink-600"
+            >
+              <span>🎉</span>
+              <span>Birthdiary</span>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2 text-lg font-black text-pink-600 select-none">
+              <span>🎉</span>
+              <span>Birthdiary</span>
+            </div>
+          )}
 
-          <div className="flex gap-4 items-center justify-end flex-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setShowSearch((prev) => !prev)}
-              className="text-pink-700 hover:text-pink-900"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-pink-600 shadow-sm ring-1 ring-pink-100"
               aria-label="Toggle search"
+              type="button"
             >
-              <Search size={24} />
+              <Search className="h-5 w-5" />
             </button>
 
-            <button onClick={() => setIsOpen((prev) => !prev)} aria-label="Toggle menu">
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            <button
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-pink-600 shadow-sm ring-1 ring-pink-100"
+              aria-label="Toggle menu"
+              type="button"
+            >
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {isOpen && (
-          <div className="md:hidden bg-pink-50 px-4 pb-4">
-            <div className="flex flex-col gap-4">
-              {navLinks.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="font-medium hover:underline"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {label}
-                </Link>
-              ))}
+          <div className="border-t border-pink-100 bg-white/95 px-4 pb-4 pt-2 shadow-sm md:hidden">
+            <div className="flex flex-col gap-2">
+              {navLinks.map(({ href, label }) => {
+                const active = pathname === href;
 
-              {/* ✅ Show Install option only on mobile after mount */}
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`rounded-2xl px-4 py-3 text-sm font-black transition ${
+                      active
+                        ? 'bg-pink-500 text-white'
+                        : 'text-pink-700 hover:bg-pink-50'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+
               {hasMounted && isMobile && (
                 <button
                   onClick={() => {
                     setShowInstallPopup(true);
                     setIsOpen(false);
                   }}
-                  className="font-medium text-left text-pink-700 hover:underline"
+                  className="flex items-center gap-2 rounded-2xl px-4 py-3 text-left text-sm font-black text-purple-600 hover:bg-purple-50"
+                  type="button"
                 >
-                  📲 Install App
+                  <Download className="h-4 w-4" />
+                  Install App
                 </button>
               )}
 
-              <div onClick={() => setIsOpen(false)}>
+              <div className="pt-2" onClick={() => setIsOpen(false)}>
                 <LoginLogoutButton />
               </div>
             </div>
@@ -154,32 +182,15 @@ export default function Navbar() {
         )}
       </nav>
 
-      {/* Mobile Search */}
       {showSearch && (
-        <div className="md:hidden px-4 py-2 bg-white border-t border-pink-200 shadow-sm">
+        <div className="sticky top-[65px] z-40 border-b border-pink-100 bg-white/95 px-4 py-3 shadow-sm md:hidden">
           <ProfileSearch />
         </div>
       )}
 
-      {/* Install Popup */}
       {showInstallPopup && (
         <InstallInstructions onClose={() => setShowInstallPopup(false)} />
       )}
-
-      <style jsx>{`
-        @keyframes spin-slow {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 6s linear infinite;
-          display: inline-block;
-        }
-      `}</style>
     </>
   );
 }

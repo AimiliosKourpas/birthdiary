@@ -192,3 +192,62 @@
 .animate-ping-slow {
   animation: ping-slow 6s infinite ease-in-out;
 }
+.birthdiary-datepicker-header {
+  padding: 8px 10px 10px;
+}
+
+.birthdiary-month-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.birthdiary-current-date {
+  color: #ec4899;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.birthdiary-nav-button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: #fce7f3;
+  color: #ec4899;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.birthdiary-year-row {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.birthdiary-year-row button {
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  color: #db2777;
+  padding: 8px 6px;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.12);
+}
+
+@media (max-width: 640px) {
+  .birthdiary-datepicker-popper {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 18px !important;
+    top: auto !important;
+    transform: none !important;
+    width: auto !important;
+  }
+}

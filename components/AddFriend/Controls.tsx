@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RefreshCw, Search, X } from 'lucide-react';
 
 interface Props {
@@ -17,77 +17,60 @@ export default function Controls({ query, onQueryChange, reload, loading }: Prop
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
-    if (searchOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (searchOpen) inputRef.current?.focus();
   }, [searchOpen]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        wrapperRef.current &&
-        !wrapperRef.current.contains(event.target as Node)
-      ) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setSearchOpen(false);
       }
     }
-    if (searchOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+
+    if (searchOpen) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [searchOpen]);
 
+  const buttonClass =
+    'flex h-11 w-11 items-center justify-center rounded-full bg-white text-pink-600 shadow-md ring-2 ring-pink-100 transition hover:-translate-y-0.5 hover:bg-pink-50 hover:shadow-lg disabled:opacity-60';
+
   return (
-    <div ref={wrapperRef} className="flex items-center gap-3 w-full sm:w-auto relative">
-      {/* SEARCH BUTTON - SHOW ONLY WHEN SEARCH CLOSED ON LAPTOP */}
+    <div ref={wrapperRef} className="relative flex w-full items-center gap-2 sm:w-auto">
       {(!searchOpen || isMobile) && (
         <button
           onClick={() => setSearchOpen((prev) => !prev)}
-          aria-label="Toggle search"
-          className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition shadow-sm"
+          aria-label="Search friends"
+          className={buttonClass}
           type="button"
         >
-          <Search className="w-5 h-5" />
+          <Search className="h-5 w-5" />
         </button>
       )}
 
-      {/* SEARCH INPUT */}
       {searchOpen && (
         <>
           {isMobile ? (
-            // MOBILE
-            <div
-              className="absolute top-full mt-2 left-0 bg-white rounded-lg shadow-md px-4 py-2 w-56 ring-1 ring-blue-300 ring-opacity-40 z-50 flex"
-              role="dialog"
-              aria-modal="true"
-            >
+            <div className="absolute left-0 top-full z-50 mt-3 w-64 rounded-3xl bg-white p-3 shadow-xl ring-2 ring-pink-100">
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
                 placeholder="Search friends..."
-                className="flex-grow text-blue-700 text-sm placeholder-blue-300 bg-blue-50 rounded-md px-3 py-2
-                           focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-150"
+                className="h-11 w-full rounded-2xl bg-pink-50 px-4 text-sm font-semibold text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-300"
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') setSearchOpen(false);
                 }}
-                aria-label="Search friends input"
               />
             </div>
           ) : (
-            // DESKTOP
             <>
               <input
                 ref={inputRef}
@@ -95,35 +78,33 @@ export default function Controls({ query, onQueryChange, reload, loading }: Prop
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
                 placeholder="Search friends..."
-                className="sm:w-64 pl-4 pr-10 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition"
+                className="h-11 w-64 rounded-full bg-white px-5 text-sm font-semibold text-slate-700 shadow-md ring-2 ring-pink-100 placeholder:text-slate-400 focus:outline-none focus:ring-pink-300"
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') setSearchOpen(false);
                 }}
-                aria-label="Search friends"
               />
+
               <button
                 onClick={() => setSearchOpen(false)}
                 aria-label="Close search"
-                className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition shadow-sm"
+                className={buttonClass}
                 type="button"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </>
           )}
         </>
       )}
 
-      {/* RELOAD BUTTON */}
       <button
         onClick={reload}
         disabled={loading}
         aria-label="Reload friends"
-        className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition shadow-sm"
+        className={buttonClass}
+        type="button"
       >
-        <RefreshCw
-          className={`w-5 h-5 transition-transform ${loading ? 'animate-spin-smooth' : ''}`}
-        />
+        <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
       </button>
     </div>
   );

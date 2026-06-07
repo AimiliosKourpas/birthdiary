@@ -1,35 +1,51 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const ConfettiBackground = () => {
-  const confettiCount = typeof window !== 'undefined' && window.innerWidth > 768 ? 80 : 30;
+interface ConfettiPiece {
+  id: number;
+  hue: number;
+  left: number;
+  delay: number;
+  size: number;
+  rotate: number;
+}
+
+export default function ConfettiBackground() {
+  const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
+
+  useEffect(() => {
+    const count = window.innerWidth > 768 ? 80 : 30;
+
+    const pieces = Array.from({ length: count }, (_, i) => ({
+      id: i,
+      hue: Math.floor(Math.random() * 360),
+      left: Math.random() * 100,
+      delay: Math.random() * 5,
+      size: 6 + Math.random() * 6,
+      rotate: Math.random() * 360,
+    }));
+
+    setConfetti(pieces);
+  }, []);
 
   return (
     <>
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {[...Array(confettiCount)].map((_, i) => {
-          const hue = Math.floor(Math.random() * 360);
-          const left = Math.random() * 100; // % of screen width
-          const delay = Math.random() * 5;
-          const size = 6 + Math.random() * 6;
-          const rotate = Math.random() * 360;
-
-          return (
-            <div
-              key={i}
-              className="confetti"
-              style={{
-                left: `${left}%`,
-                animationDelay: `${delay}s`,
-                width: `${size}px`,
-                height: `${size}px`,
-                backgroundColor: `hsl(${hue}, 70%, 80%)`,
-                transform: `rotate(${rotate}deg)`,
-              }}
-            />
-          );
-        })}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {confetti.map((piece) => (
+          <div
+            key={piece.id}
+            className="confetti"
+            style={{
+              left: `${piece.left}%`,
+              animationDelay: `${piece.delay}s`,
+              width: `${piece.size}px`,
+              height: `${piece.size}px`,
+              backgroundColor: `hsl(${piece.hue}, 70%, 80%)`,
+              transform: `rotate(${piece.rotate}deg)`,
+            }}
+          />
+        ))}
       </div>
 
       <style jsx>{`
@@ -46,6 +62,7 @@ const ConfettiBackground = () => {
             transform: translateY(0) rotate(0deg);
             opacity: 0.8;
           }
+
           100% {
             transform: translateY(110vh) rotate(720deg);
             opacity: 0;
@@ -54,6 +71,4 @@ const ConfettiBackground = () => {
       `}</style>
     </>
   );
-};
-
-export default ConfettiBackground;
+}
