@@ -1,19 +1,22 @@
+import { Friend } from './types';
+
 export function getMonthDay(dateString: string) {
     const d = new Date(dateString);
     return `${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
   }
   
   export function getDaysUntilNextBirthday(dateString: string) {
-    const now = new Date();
+    const rawNow = new Date();
+    const now = new Date(rawNow.getFullYear(), rawNow.getMonth(), rawNow.getDate());
     const birthday = new Date(dateString);
-  
+
     // Next birthday year
-    let next = new Date(now.getFullYear(), birthday.getMonth(), birthday.getDate());
-  
+    const next = new Date(now.getFullYear(), birthday.getMonth(), birthday.getDate());
+
     if (next < now) {
       next.setFullYear(next.getFullYear() + 1);
     }
-  
+
     const diff = next.getTime() - now.getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
@@ -31,7 +34,7 @@ export function getMonthDay(dateString: string) {
     return age;
   }
   
-  export function applyFilter(friends: any[], filter: 'all' | 'thisMonth' | 'today') {
+  export function applyFilter(friends: Friend[], filter: 'all' | 'thisMonth' | 'today') {
     if (filter === 'all') return friends;
   
     const now = new Date();
@@ -53,7 +56,7 @@ export function getMonthDay(dateString: string) {
     return friends;
   }
   
-  export function applySort(friends: any[], sort: string) {
+  export function applySort(friends: Friend[], sort: string) {
     const sorted = [...friends];
   
     switch (sort) {

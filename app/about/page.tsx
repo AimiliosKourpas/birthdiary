@@ -4,7 +4,11 @@ import CookieConsentBanner from '@/components/CookieConsentBanner';
 import AuthButtons from '@/components/AuthButtons';
 import ConfettiBackground from '@/components/ui/ConfettiBackground';
 
-export default async function AboutPage() {
+export default async function AboutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const supabase = await createClient();
 
   const {
@@ -13,6 +17,7 @@ export default async function AboutPage() {
   } = await supabase.auth.getUser();
 
   const isLoggedIn = !!user && !userError;
+  const showConfirmEmailNotice = (await searchParams).confirmEmail === '1';
 
   return (
     <>
@@ -50,6 +55,17 @@ export default async function AboutPage() {
             <br />
             Keep them all in one happy place. 🎈
           </p>
+
+          {showConfirmEmailNotice && (
+            <div className="mx-auto mt-8 max-w-xl rounded-3xl border-2 border-green-200 bg-green-50 px-6 py-4 text-center shadow-sm">
+              <p className="font-black text-green-700">
+                🎉 Account created! Check your email and click the confirmation link to activate it.
+              </p>
+              <p className="mt-1 text-sm font-semibold text-green-600">
+                Once confirmed, come back here and sign in.
+              </p>
+            </div>
+          )}
 
           <div className="mt-8">
             <AuthButtons isLoggedIn={isLoggedIn} />

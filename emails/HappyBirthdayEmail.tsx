@@ -17,30 +17,34 @@ import {
   }: HappyBirthdayEmailProps) {
     return (
       <Html>
-        <Head />
+        <Head>
+          <meta name="color-scheme" content="light dark" />
+          <meta name="supported-color-schemes" content="light dark" />
+          <style>{darkModeStyles}</style>
+        </Head>
         <Preview>🎂 Happy Birthday from Birthdiary!</Preview>
-  
-        <Body style={main}>
-          <Container style={container}>
+
+        <Body style={main} className="bd-body">
+          <Container style={container} className="bd-card">
             <Text style={emoji}>🎂</Text>
-  
-            <Text style={badge}>Birthdiary</Text>
-  
-            <Text style={title}>
+
+            <Text style={badge} className="bd-badge">Birthdiary</Text>
+
+            <Text style={title} className="bd-heading">
               Happy Birthday, {name}! 🎉
             </Text>
-  
-            <Text style={paragraph}>
+
+            <Text style={paragraph} className="bd-text">
               Wishing you a beautiful day full of love, smiles, and tiny happy moments.
             </Text>
-  
-            <Text style={paragraph}>
+
+            <Text style={paragraph} className="bd-text">
               Thank you for being part of Birthdiary. Today is your day — enjoy every second of it. 💖
             </Text>
-  
-            <Hr style={hr} />
-  
-            <Text style={footer}>
+
+            <Hr style={hr} className="bd-hr" />
+
+            <Text style={footer} className="bd-accent">
               With love,
               <br />
               Birthdiary 🎈
@@ -118,3 +122,22 @@ import {
     fontWeight: '800',
     textAlign: 'center' as const,
   };
+
+  // Dark-mode overrides. Inline styles above always win unless a client
+  // both keeps <style> blocks and respects prefers-color-scheme (Apple
+  // Mail is the most reliable; some Gmail contexts support this too), so
+  // !important is required here — inline style attributes otherwise
+  // always beat a class selector regardless of source order. Clients that
+  // strip <style> blocks entirely just keep the light-mode inline colors
+  // above, which is the intended, safe fallback.
+  const darkModeStyles = `
+    @media (prefers-color-scheme: dark) {
+      .bd-body { background-color: #171310 !important; }
+      .bd-card { background-color: #332a24 !important; border-color: #5c4a3c !important; }
+      .bd-heading { color: #f5efe9 !important; }
+      .bd-text { color: #b9b0a8 !important; }
+      .bd-accent { color: #f472b6 !important; }
+      .bd-badge { background-color: #4a1942 !important; color: #f9a8d4 !important; }
+      .bd-hr { border-color: #5c4a3c !important; }
+    }
+  `;

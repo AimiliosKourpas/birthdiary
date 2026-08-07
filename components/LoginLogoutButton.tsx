@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { LogIn, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { signout } from '@/lib/auth-actions';
 import type { User } from '@supabase/supabase-js';
@@ -12,6 +12,7 @@ const LoginLogoutButton = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
+  const pathname = usePathname();
   const supabase = createClient();
 
   useEffect(() => {
@@ -36,6 +37,16 @@ const LoginLogoutButton = () => {
       authListener.subscription.unsubscribe();
     };
   }, [supabase]);
+
+  // Login/logout/signup run via Server Actions using a separate server-side
+  // Supabase client, so this component's browser client never receives an
+  // onAuthStateChange event for them. Re-check on every navigation (every
+  // auth action here redirects afterward) to avoid a stale button state.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, [pathname]);
 
   if (!isMounted) {
     return null;

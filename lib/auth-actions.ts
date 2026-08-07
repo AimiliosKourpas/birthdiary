@@ -47,7 +47,12 @@ export async function signup(formData: FormData) {
     redirect("/error");
   }
 
-  await supabase.from("profiles").insert({
+  // A DB trigger on auth.users already creates this row in production
+  // (confirmed: it exists before this line runs). upsert() instead of
+  // insert() avoids a redundant duplicate-key error there, while still
+  // creating the row directly in any environment where that trigger
+  // isn't set up (e.g. a fresh local Supabase project).
+  await supabase.from("profiles").upsert({
     id: signUpData.user.id,
     full_name,
     email: data.email,
@@ -55,6 +60,16 @@ export async function signup(formData: FormData) {
   });
 
   revalidatePath("/", "layout");
+
+  // signUp() only returns a session when email confirmation is not
+  // required. When it is required, there's no session yet, so redirect
+  // to the public landing page with a flag instead of "/" (which would
+  // just silently bounce back here anyway) so the user learns they need
+  // to confirm their email before they can log in.
+  if (!signUpData.session) {
+    redirect("/about?confirmEmail=1");
+  }
+
   redirect("/");
 }
 

@@ -10,7 +10,19 @@ export async function GET(req: Request) {
     return NextResponse.json({ profiles: [] });
   }
 
-  const query = `%${q.trim()}%`;
+  // PostgREST's .or() takes a raw filter string — commas separate
+  // conditions and parentheses group them, so they must be stripped from
+  // user input to prevent injecting extra filter conditions. Dots are
+  // safe to keep (needed for email search): PostgREST only splits on the
+  // first two dots (column.operator.value), so dots inside the value are
+  // never re-interpreted.
+  const sanitizedTerm = q.trim().replace(/[,()]/g, '');
+
+  if (!sanitizedTerm) {
+    return NextResponse.json({ profiles: [] });
+  }
+
+  const query = `%${sanitizedTerm}%`;
 
   // Get current user
   const {
@@ -24,7 +36,7 @@ export async function GET(req: Request) {
 
   const { data, error } = await supabase
   .from('profiles')
-  .select('id, full_name, email, birthdate')
+  .select('id, full_name, email')
   .or(`full_name.ilike.${query},email.ilike.${query}`)
   .neq('id', user.id)
   .limit(10);

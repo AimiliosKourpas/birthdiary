@@ -20,30 +20,34 @@ export default function AddFriendForm() {
     setError(null);
     setSuccess(false);
 
-    const res = await fetch('/api/friends/add', {
-      method: 'POST',
-      body: JSON.stringify({
-        name,
-        birthday: birthday
-          ? `${birthday.getFullYear()}-${String(birthday.getMonth() + 1).padStart(2, '0')}-${String(
-              birthday.getDate()
-            ).padStart(2, '0')}`
-          : null,
-      }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    try {
+      const res = await fetch('/api/friends/add', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          birthday: birthday
+            ? `${birthday.getFullYear()}-${String(birthday.getMonth() + 1).padStart(2, '0')}-${String(
+                birthday.getDate()
+              ).padStart(2, '0')}`
+            : null,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-    const result = await res.json();
+      const result = await res.json().catch(() => null);
 
-    if (res.ok) {
-      setSuccess(true);
-      setName('');
-      setBirthday(null);
-    } else {
-      setError(result.error || 'Something went wrong');
+      if (res.ok) {
+        setSuccess(true);
+        setName('');
+        setBirthday(null);
+      } else {
+        setError(result?.error || 'Something went wrong');
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
+import { adminSupabase } from '@/utils/supabase/adminClient'
 
-export async function DELETE(req: Request) {
+export async function DELETE() {
   const supabase = await createClient()
 
   const {
@@ -24,11 +25,17 @@ export async function DELETE(req: Request) {
   }
 
   //  Delete user from Supabase auth
-  const { error: deleteUserError } = await supabase.auth.admin.deleteUser(user.id)
+  const { error: deleteUserError } = await adminSupabase.auth.admin.deleteUser(user.id)
 
   if (deleteUserError) {
     return NextResponse.json({ error: deleteUserError.message }, { status: 500 })
   }
+
+  // Clear the session cookie so the client immediately sees a logged-out
+  // state. Without this, the browser's cached session cookie stays
+  // present until it naturally expires, since it's never told this user
+  // no longer exists.
+  await supabase.auth.signOut()
 
   return NextResponse.json({ success: true })
 }

@@ -25,7 +25,8 @@ const supabase = createBrowserClient(
 );
 
 function getDaysUntilNextBirthday(birthday: string) {
-  const today = new Date();
+  const rawToday = new Date();
+  const today = new Date(rawToday.getFullYear(), rawToday.getMonth(), rawToday.getDate());
   const birthDate = new Date(birthday);
 
   const nextBirthday = new Date(
